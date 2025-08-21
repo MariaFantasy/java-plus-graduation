@@ -53,7 +53,7 @@ public interface EventRepository extends JpaRepository<Event, Long> {
 
     @Query(value = """
             UPDATE events
-            SET confirmedRequests = ?2
+            SET confirmed_requests = ?2
             WHERE id = ?1
         """,
         nativeQuery = true

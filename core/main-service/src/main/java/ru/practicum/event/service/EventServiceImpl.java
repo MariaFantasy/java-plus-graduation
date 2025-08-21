@@ -48,8 +48,7 @@ import java.util.stream.Collectors;
 public class EventServiceImpl implements EventService {
     private static final String APP_NAME = "main_svc";
     private static final String STATS_SERVICE_SCHEME = "http";
-    private static final String STATS_SERVICE_HOST = "ewm-stats-server";
-    private static final Integer STATS_SERVICE_PORT = 9090;
+    private static final String STATS_SERVICE_NAME = "STATS-SERVER";
     private final UserService userService;
     private final CategoryService categoryService;
     private final LocationService locationService;
@@ -58,7 +57,7 @@ public class EventServiceImpl implements EventService {
     private final UserDtoMapper userDtoMapper;
     private final CategoryDtoMapper categoryDtoMapper;
     private final LocationDtoMapper locationDtoMapper;
-    private final RestTemplate restTemplate = new RestTemplate();
+    private final RestTemplate restTemplate;
 
     final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
@@ -83,6 +82,7 @@ public class EventServiceImpl implements EventService {
             throw new IncorrectRequestException("Unknown sort type");
         }
         saveView(request);
+        log.info("Saved view");
         final Collection<Event> events = eventRepository.findAllByPublic(text, categories, paid, rangeStart == null ? null : LocalDateTime.parse(rangeStart, formatter), rangeEnd == null ? null : LocalDateTime.parse(rangeEnd, formatter), onlyAvailable, (Pageable) PageRequest.of(from, size));
         return events.stream()
                 .map(event -> {
@@ -266,8 +266,7 @@ public class EventServiceImpl implements EventService {
     private void saveView(HttpServletRequest request) {
         final String url = UriComponentsBuilder.newInstance()
                 .scheme(STATS_SERVICE_SCHEME)
-                .host(STATS_SERVICE_HOST)
-                .port(STATS_SERVICE_PORT)
+                .host(STATS_SERVICE_NAME)
                 .path("/hit")
                 .toUriString();
 
@@ -278,7 +277,6 @@ public class EventServiceImpl implements EventService {
                 .timestamp(LocalDateTime.now().format(formatter))
                 .build();
 
-        final HttpMethod method = HttpMethod.POST;
         final HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setAccept(List.of(MediaType.APPLICATION_JSON));
@@ -288,7 +286,7 @@ public class EventServiceImpl implements EventService {
         log.info("Тело запроса: {}", requestBody);
 
         try {
-            ResponseEntity<Object> response = restTemplate.exchange(url, method, requestBody, Object.class);
+            ResponseEntity<Object> response = restTemplate.postForEntity(url, requestBody, Object.class);
 
             if (response.getStatusCode() == HttpStatus.CREATED) {
                 log.info("Просмотр успешно записанного события.");
@@ -306,8 +304,7 @@ public class EventServiceImpl implements EventService {
         );
         final String url = UriComponentsBuilder.newInstance()
                 .scheme(STATS_SERVICE_SCHEME)
-                .host(STATS_SERVICE_HOST)
-                .port(STATS_SERVICE_PORT)
+                .host(STATS_SERVICE_NAME)
                 .path("/stats")
                 .queryParam("start", start.format(formatter))
                 .queryParam("end", end.format(formatter))
@@ -315,15 +312,9 @@ public class EventServiceImpl implements EventService {
                 .queryParam("unique", "true")
                 .toUriString();
 
-        final HttpMethod method = HttpMethod.GET;
-        final HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.setAccept(List.of(MediaType.APPLICATION_JSON));
-        final HttpEntity<Object> requestBody = new HttpEntity<>(null, headers);
-
         log.info(url);
 
-        final ResponseEntity<String> response = restTemplate.exchange(url, method, requestBody, String.class);
+        final ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
 
         log.info(response.getStatusCode().toString());
 

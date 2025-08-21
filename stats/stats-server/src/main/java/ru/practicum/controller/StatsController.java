@@ -25,8 +25,10 @@ public class StatsController {
                                            @RequestParam String end,
                                            @RequestParam(required = false, defaultValue = "") List<String> uris,
                                            @RequestParam(required = false, defaultValue = "false") Boolean unique) {
-        log.info("Получен запрос на получение статистики по посещениям");
-        return statisticService.get(start, end, uris, unique);
+        log.info("Получен запрос на получение статистики по посещениям с параметрами: start={}, end = {}, uris={}, unique={}", start, end, uris, unique);
+        List<ResponseStatsDto> response = statisticService.get(start, end, uris, unique);
+        log.info("Отправлен ответ на запрос на получение статистики по посещениям с телом:{}", response);
+        return response;
     }
 
     @PostMapping("/hit")

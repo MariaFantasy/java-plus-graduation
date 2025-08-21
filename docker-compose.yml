@@ -1,4 +1,12 @@
 services:
+  discovery-server:
+    restart: on-failure
+    build: infra/discovery-server
+    image: discovery-server
+    container_name: "discovery-server"
+    ports:
+      - "8761:8761"
+
   stats-server:
     restart: on-failure
     build: stats/stats-server
@@ -8,6 +16,7 @@ services:
       - "9090:9090"
     depends_on:
       - stats-db
+      - discovery-server
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://stats-db:5432/stats
       - POSTGRES_USER=user
@@ -17,6 +26,8 @@ services:
       - SPRING_DATASOURCE_PASSWORD=password
       - DB_HOST=stats-db
       - DB_PORT=6541
+      - EUREKA_HOSTNAME=discovery-server
+      - SERVER_PORT=9090
 
   stats-db:
     image: postgres:16.1
@@ -32,7 +43,7 @@ services:
 
   ewm-service:
     restart: on-failure
-    build: main-service
+    build: core/main-service
     image: ewm-main-service
     container_name: "ewm-main-service"
     ports:
@@ -40,6 +51,7 @@ services:
     depends_on:
       - main-db
       - stats-server
+      - discovery-server
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://main-db:5432/main_db
       - POSTGRES_USER=user
@@ -49,6 +61,8 @@ services:
       - SPRING_DATASOURCE_PASSWORD=password
       - DB_HOST=main-db
       - DB_PORT=6542
+      - EUREKA_HOSTNAME=discovery-server
+      - SERVER_PORT=8080
 
   main-db:
     image: postgres:16.1

@@ -56,7 +56,7 @@ public class Event {
     @Column(name = "participant_limit")
     private Long participantLimit;
 
-    @Column(name = "confirmedRequests")
+    @Column(name = "confirmed_requests")
     private Long confirmedRequests;
 
     @Column(name = "state", length = 50)
@@ -69,5 +69,6 @@ public class Event {
     @Column(name = "published_on")
     private LocalDateTime publishedOn;
 
+    @Transient
     private Long views;
 }

@@ -33,7 +33,7 @@ CREATE TABLE IF NOT EXISTS events (
     paid BOOLEAN NOT NULL DEFAULT false,
     request_moderation BOOLEAN NOT NULL DEFAULT false,
     participant_limit BIGINT NOT NULL DEFAULT 0,
-    confirmedRequests BIGINT NOT NULL DEFAULT 0,
+    confirmed_requests BIGINT NOT NULL DEFAULT 0,
     state VARCHAR(50) NOT NULL,
     created_on TIMESTAMP NOT NULL,
     published_on TIMESTAMP,
