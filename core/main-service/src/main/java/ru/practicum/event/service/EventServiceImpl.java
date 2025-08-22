@@ -59,7 +59,7 @@ public class EventServiceImpl implements EventService {
     private final LocationDtoMapper locationDtoMapper;
     private final RestTemplate restTemplate;
 
-    final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     @Override
     public EventFullDto create(Long userId, NewEventDto eventDto) {
