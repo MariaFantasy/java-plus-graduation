@@ -11,6 +11,8 @@ import ru.practicum.mapper.HitMapper;
 import ru.practicum.model.Hit;
 import ru.practicum.reposirory.StatisticRepository;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -21,6 +23,7 @@ import java.util.stream.Collectors;
 public class StatisticServiceImpl implements StatisticService {
 
     private final StatisticRepository statisticRepository;
+    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     @Override
     public ResponseHitDto create(CreateHitDto createHitDto) {
@@ -40,10 +43,12 @@ public class StatisticServiceImpl implements StatisticService {
         }
 
         final List<StatisticRepository.ResponseStatsDto> hits;
+        final LocalDateTime startDate = LocalDateTime.parse(start.replaceFirst("%20", " "), formatter);
+        final LocalDateTime endDate = LocalDateTime.parse(end.replaceFirst("%20", " "), formatter);
         if (uris.isEmpty()) {
-            hits = statisticRepository.getByAllUris(start.replaceFirst("%20", " "), end.replaceFirst("%20", " "));
+            hits = statisticRepository.getByAllUris(startDate, endDate);
         } else {
-            hits = statisticRepository.getByUris(start.replaceFirst("%20", " "), end.replaceFirst("%20", " "), uris);
+            hits = statisticRepository.getByUris(startDate, endDate, uris);
         }
         return hits.stream()
                 .map(stats -> ResponseStatsDto.builder()
