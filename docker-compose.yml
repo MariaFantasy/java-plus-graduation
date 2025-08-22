@@ -56,6 +56,7 @@ services:
       - DB_PORT=6541
       - EUREKA_HOSTNAME=discovery-server
       - CONFIG_HOSTNAME=config-server
+      - CONFIG_PORT=8888
       - SERVER_PORT=9090
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:9090/actuator/health"]
@@ -108,6 +109,7 @@ services:
       - DB_PORT=6542
       - EUREKA_HOSTNAME=discovery-server
       - CONFIG_HOSTNAME=config-server
+      - CONFIG_PORT=8888
       - SERVER_PORT=8080
 
   main-db:

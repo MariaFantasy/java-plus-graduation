@@ -2,11 +2,11 @@ spring:
   application:
     name: main-service
   config:
-    import: "configserver:"
+    import: "configserver:http://${CONFIG_HOSTNAME:localhost}:${CONFIG_PORT:8888}"
     cloud:
       discovery:
         enabled: true
-        serviceId: config-server
+        serviceId: CONFIG-SERVER
         fail-fast: true
         retry:
           useRandomPolicy: true

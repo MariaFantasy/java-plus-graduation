@@ -2,7 +2,7 @@ spring:
   application:
     name: stats-server
   config:
-    import: "configserver:http://${CONFIG_HOSTNAME:localhost}:8888"
+    import: "configserver:http://${CONFIG_HOSTNAME:localhost}:${CONFIG_PORT:8888}"
     cloud:
       discovery:
         enabled: true
