@@ -88,7 +88,7 @@ services:
     image: ewm-main-service
     container_name: "ewm-main-service"
     ports:
-      - "8080:8080"
+      - "8081:8081"
     depends_on:
       discovery-server:
         condition: service_healthy
@@ -110,7 +110,7 @@ services:
       - EUREKA_HOSTNAME=discovery-server
       - CONFIG_HOSTNAME=config-server
       - CONFIG_PORT=8888
-      - SERVER_PORT=8080
+      - SERVER_PORT=8081
 
   main-db:
     image: postgres:16.1
