@@ -6,7 +6,7 @@ spring:
     cloud:
       discovery:
         enabled: true
-        serviceId: CONFIG-SERVER
+        serviceId: config-server
         fail-fast: true
         retry:
           useRandomPolicy: true
