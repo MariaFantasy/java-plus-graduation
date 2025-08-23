@@ -1,14 +1,154 @@
 services:
+  discovery-server:
+    restart: on-failure
+    build: infra/discovery-server
+    image: discovery-server
+    container_name: "discovery-server"
+    ports:
+      - "8761:8761"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8761/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  config-server:
+    restart: on-failure
+    build: infra/config-server
+    image: config-server
+    container_name: "config-server"
+    ports:
+      - "8888:8888"
+    depends_on:
+      discovery-server:
+        condition: service_healthy
+    environment:
+      - EUREKA_HOSTNAME=discovery-server
+      - SERVER_PORT=8888
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8888/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  gateway-server:
+    restart: on-failure
+    build: infra/gateway-server
+    image: gateway-server
+    container_name: "gateway-server"
+    ports:
+      - "8080:8080"
+    depends_on:
+      discovery-server:
+        condition: service_healthy
+      config-server:
+        condition: service_healthy
+    environment:
+      - EUREKA_HOSTNAME=discovery-server
+      - SERVER_PORT=8080
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/actuator/health" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   stats-server:
+    restart: on-failure
+    build: stats/stats-server
+    image: ewm-stats-server
+    container_name: "ewm-stats-server"
     ports:
       - "9090:9090"
+    depends_on:
+      discovery-server:
+        condition: service_healthy
+      config-server:
+        condition: service_healthy
+      gateway-server:
+        condition: service_healthy
+      stats-db:
+        condition: service_healthy
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://stats-db:5432/stats
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+      - DB_NAME=stats
+      - SPRING_DATASOURCE_USERNAME=user
+      - SPRING_DATASOURCE_PASSWORD=password
+      - DB_HOST=stats-db
+      - DB_PORT=6541
+      - EUREKA_HOSTNAME=discovery-server
+      - CONFIG_HOSTNAME=config-server
+      - CONFIG_PORT=8888
+      - SERVER_PORT=9090
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9090/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   stats-db:
     image: postgres:16.1
+    container_name: "stats-db"
+    ports:
+      - "6541:5432"
+    volumes:
+      - /var/lib/postgresql/stats
+    environment:
+      - POSTGRES_DB=stats
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d stats"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
 
   ewm-service:
+    restart: on-failure
+    build: core/main-service
+    image: ewm-main-service
+    container_name: "ewm-main-service"
     ports:
-      - "8080:8080"
+      - "8081:8081"
+    depends_on:
+      discovery-server:
+        condition: service_healthy
+      config-server:
+        condition: service_healthy
+      stats-server:
+        condition: service_healthy
+      main-db:
+        condition: service_healthy
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://main-db:5432/main_db
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+      - DB_NAME=main_db
+      - SPRING_DATASOURCE_USERNAME=user
+      - SPRING_DATASOURCE_PASSWORD=password
+      - DB_HOST=main-db
+      - DB_PORT=6542
+      - EUREKA_HOSTNAME=discovery-server
+      - CONFIG_HOSTNAME=config-server
+      - CONFIG_PORT=8888
+      - SERVER_PORT=8081
 
-  ewm-db:
+  main-db:
     image: postgres:16.1
+    container_name: "main-db"
+    ports:
+      - "6542:5432"
+    volumes:
+      - /var/lib/postgresql/main-service
+    environment:
+      - POSTGRES_DB=main_db
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d main_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
