@@ -1,4 +1,7 @@
 package ru.yandex.practicum.location.storage;
 
-public class LocationRepository {
+import org.springframework.data.jpa.repository.JpaRepository;
+import ru.yandex.practicum.location.model.Location;
+
+public interface LocationRepository extends JpaRepository<Location, Long> {
 }
