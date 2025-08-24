@@ -19,6 +19,8 @@ public interface CommentDtoMapper {
     @Mapping(target = "createdOn", source = "comment.createdOn")
     @Mapping(target = "updatedOn", source = "comment.updatedOn")
     CommentDto mapToDto(Comment comment, UserShortDto author);
+    
+    List<CommentDto> mapReplies(List<Comment> replies);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "authorId", ignore = true)
