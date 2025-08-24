@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class UpdateEventAdminDto {
+public class UpdateEventAdminRequest {
 
     @Size(min = 20, max = 2000, message = "Name should be from 20 to 2000 symbols")
     private String annotation;

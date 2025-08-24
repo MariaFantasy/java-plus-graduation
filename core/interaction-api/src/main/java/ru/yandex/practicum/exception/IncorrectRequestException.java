@@ -1,7 +1,7 @@
 package ru.yandex.practicum.exception;
 
 public class IncorrectRequestException extends RuntimeException {
-  public IncorrectRequestException(String message) {
-    super(message);
-  }
+    public IncorrectRequestException(String message) {
+        super(message);
+    }
 }
