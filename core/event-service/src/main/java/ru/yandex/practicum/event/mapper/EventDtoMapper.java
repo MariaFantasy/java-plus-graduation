@@ -13,13 +13,13 @@ import ru.yandex.practicum.location.mapper.LocationDtoMapper;
 public interface EventDtoMapper {
 
     @Mapping(target = "initiator", source = "user")
-    @Mapping(target = "eventDate", source = "eventDate", dateFormat = "yyyy-MM-dd HH:mm:ss")
-    @Mapping(target = "createdOn", source = "createdOn", dateFormat = "yyyy-MM-dd HH:mm:ss")
-    @Mapping(target = "publishedOn", source = "publishedOn", dateFormat = "yyyy-MM-dd HH:mm:ss", ignore = true)
+    @Mapping(target = "eventDate", source = "event.eventDate", dateFormat = "yyyy-MM-dd HH:mm:ss")
+    @Mapping(target = "createdOn", source = "event.createdOn", dateFormat = "yyyy-MM-dd HH:mm:ss")
+    @Mapping(target = "publishedOn", source = "event.publishedOn", dateFormat = "yyyy-MM-dd HH:mm:ss", ignore = true)
     EventFullDto mapToFullDto(Event event, UserShortDto user);
 
-    @Mapping(target = "initiator", source = "user")
-    @Mapping(target = "eventDate", source = "eventDate", dateFormat = "yyyy-MM-dd HH:mm:ss")
+    @Mapping(target = "initiator", source = "event.user")
+    @Mapping(target = "eventDate", source = "event.eventDate", dateFormat = "yyyy-MM-dd HH:mm:ss")
     EventShortDto mapToShortDto(Event event, UserShortDto user);
 
     @Mapping(target = "id", ignore = true)
