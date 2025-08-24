@@ -7,6 +7,8 @@ import ru.yandex.practicum.dto.UpdateCommentDto;
 import ru.yandex.practicum.dto.UserShortDto;
 import ru.yandex.practicum.model.Comment;
 
+import java.util.List;
+
 @Mapper(componentModel = "spring")
 public interface CommentDtoMapper {
 
@@ -19,7 +21,7 @@ public interface CommentDtoMapper {
     @Mapping(target = "createdOn", source = "comment.createdOn")
     @Mapping(target = "updatedOn", source = "comment.updatedOn")
     CommentDto mapToDto(Comment comment, UserShortDto author);
-    
+
     List<CommentDto> mapReplies(List<Comment> replies);
 
     @Mapping(target = "id", ignore = true)
@@ -39,4 +41,8 @@ public interface CommentDtoMapper {
     @Mapping(target = "createdOn", ignore = true)
     @Mapping(target = "updatedOn", expression = "java(java.time.LocalDateTime.now())")
     Comment updateFromDto(@MappingTarget Comment comment, UpdateCommentDto commentDto);
+
+    default Long map(Comment replyOn) {
+        return replyOn != null ? replyOn.getId() : null;
+    }
 }
