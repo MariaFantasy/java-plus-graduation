@@ -10,6 +10,7 @@
     </parent>
 
     <artifactId>gateway-server</artifactId>
+    <packaging>jar</packaging>
 
     <dependencies>
         <dependency>
@@ -43,10 +44,6 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <configuration>
-                    <mainClass>ru.yandex.practicum.Gateway</mainClass>
-                    <layout>JAR</layout>
-                </configuration>
             </plugin>
         </plugins>
     </build>

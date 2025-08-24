@@ -16,21 +16,4 @@
         <module>discovery-server</module>
         <module>gateway-server</module>
     </modules>
-
-    <properties>
-        <spring-cloud-dependencies.version>2023.0.3</spring-cloud-dependencies.version>
-    </properties>
-
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>org.springframework.cloud</groupId>
-                <artifactId>spring-cloud-dependencies</artifactId>
-                <version>${spring-cloud-dependencies.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
-
 </project>
