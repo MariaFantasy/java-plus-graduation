@@ -10,7 +10,14 @@ import ru.yandex.practicum.model.Comment;
 @Mapper(componentModel = "spring")
 public interface CommentDtoMapper {
 
-    @Mapping(target = "replyOn", source = "replyOn.id")
+    @Mapping(target = "id", source = "comment.id")
+    @Mapping(target = "eventId", source = "comment.eventId")
+    @Mapping(target = "author", source = "author")
+    @Mapping(target = "replyOn", source = "comment.replyOn.id")
+    @Mapping(target = "replies", source = "comment.replies")
+    @Mapping(target = "text", source = "comment.text")
+    @Mapping(target = "createdOn", source = "comment.createdOn")
+    @Mapping(target = "updatedOn", source = "comment.updatedOn")
     CommentDto mapToDto(Comment comment, UserShortDto author);
 
     @Mapping(target = "id", ignore = true)
