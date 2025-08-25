@@ -46,17 +46,17 @@ public class AdminUserController implements UserClient {
 
     @Override
     public Collection<UserShortDto> getShort(List<Long> ids, Integer from, Integer size) {
-        log.info("Пришел GET запрос /admin/users?from={}&size={} по клиентам {}", from, size, ids);
+        log.info("Пришел GET запрос /admin/users/short?from={}&size={} по клиентам {}", from, size, ids);
         final Collection<UserShortDto> users = userService.findAllInShort(ids, from, size);
-        log.info("Отправлен ответ GET /admin/users?from={}&size={} с телом {}", from, size, users);
+        log.info("Отправлен ответ GET /admin/users/short?from={}&size={} с телом {}", from, size, users);
         return users;
     }
 
     @Override
-    public UserShortDto getById(Long id) {
-        log.info("Пришел GET запрос /admin/users?id={}", id);
-        final UserShortDto user= userService.findById(id);
-        log.info("Отправлен ответ GET /admin/users?id={} с телом {}", id, user);
+    public UserShortDto getById(Long userId) {
+        log.info("Пришел GET запрос /admin/users?id={}", userId);
+        final UserShortDto user= userService.findById(userId);
+        log.info("Отправлен ответ GET /admin/users?id={} с телом {}", userId, user);
         return user;
     }
 
