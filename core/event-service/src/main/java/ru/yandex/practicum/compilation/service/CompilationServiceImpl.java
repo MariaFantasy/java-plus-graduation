@@ -9,7 +9,6 @@ import ru.yandex.practicum.compilation.mapper.CompilationDtoMapper;
 import ru.yandex.practicum.compilation.model.Compilation;
 import ru.yandex.practicum.compilation.storage.CompilationRepository;
 import ru.yandex.practicum.dto.*;
-import ru.yandex.practicum.event.model.Event;
 import ru.yandex.practicum.event.service.EventService;
 import ru.yandex.practicum.exception.NotFoundException;
 
@@ -116,7 +115,10 @@ public class CompilationServiceImpl implements CompilationService {
         log.info("Получение подборки с compId={}", compId);
         Compilation compilation = validateCompilation(compId);
         log.info("Подборка найдена: {}", compilation);
-        final List<EventShortDto> events = eventService.findAllById(compilation.getEvents());
+        List<EventShortDto> events = new ArrayList<>();
+        if (compilation.getEvents() != null && !compilation.getEvents().isEmpty()) {
+            events = eventService.findAllById(compilation.getEvents());
+        }
 
         return compilationDtoMapper.toCompilationDto(compilation, events);
     }

@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -32,5 +33,5 @@ public class Compilation {
             joinColumns = @JoinColumn(name = "compilation_id")
     )
     @Column(name = "event_id")
-    private List<Long> events;
+    private List<Long> events = new ArrayList<>();
 }
