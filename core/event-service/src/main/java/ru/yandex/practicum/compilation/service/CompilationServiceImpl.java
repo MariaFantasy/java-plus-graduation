@@ -52,7 +52,7 @@ public class CompilationServiceImpl implements CompilationService {
         log.info("Обновление подборки c {}, на {}", updateCompilationRequest.toString(), compilation.toString());
         List<EventShortDto> events = new ArrayList<>();
         if (updateCompilationRequest.getEvents() != null && !updateCompilationRequest.getEvents().isEmpty()) {
-            final List<Long> eventIds = updateCompilationRequest.getEvents().stream().toList();
+            List<Long> eventIds = new ArrayList<>(updateCompilationRequest.getEvents());
             events.addAll(eventService.findAllById(eventIds));
             compilation.setEvents(eventIds);
             log.trace("Events = {}", compilation.getEvents());
