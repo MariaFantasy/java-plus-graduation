@@ -11,13 +11,13 @@ import java.util.List;
 
 @FeignClient(name="user-service", path="/admin/users")
 public interface UserClient {
-    @GetMapping
+    @GetMapping("/short")
     public Collection<UserShortDto> getShort(
             @RequestParam(required = false) List<Long> ids,
             @RequestParam(required = false, defaultValue = "0") @PositiveOrZero Integer from,
             @RequestParam(required = false, defaultValue = "10") @Positive Integer size
     );
 
-    @GetMapping
-    public UserShortDto getById(@RequestParam Long id);
+    @GetMapping("/{userId}")
+    public UserShortDto getById(@PathVariable Long id);
 }

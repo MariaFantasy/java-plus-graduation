@@ -21,11 +21,9 @@ public class Comment {
     @Column(name = "id")
     private Long id;
 
-    @ManyToOne
     @JoinColumn(name = "event_id")
     private Long eventId;
 
-    @ManyToOne
     @JoinColumn(name = "author_id")
     private Long authorId;
 
