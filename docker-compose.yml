@@ -64,8 +64,6 @@ services:
         condition: service_healthy
       config-server:
         condition: service_healthy
-      gateway-server:
-        condition: service_healthy
       stats-db:
         condition: service_healthy
     environment:
@@ -87,6 +85,126 @@ services:
       timeout: 5s
       retries: 5
 
+  comment-service:
+    restart: on-failure
+    build: core/comment-service
+    image: comment-service
+    container_name: "comment-service"
+    ports:
+      - "9091:9091"
+    depends_on:
+      discovery-server:
+        condition: service_healthy
+      config-server:
+        condition: service_healthy
+      stats-server:
+        condition: service_healthy
+      comment-db:
+        condition: service_healthy
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://comment-db:5432/comment_db
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+      - DB_NAME=comment_db
+      - SPRING_DATASOURCE_USERNAME=user
+      - SPRING_DATASOURCE_PASSWORD=password
+      - DB_HOST=comment-db
+      - DB_PORT=6542
+      - EUREKA_HOSTNAME=discovery-server
+      - CONFIG_HOSTNAME=config-server
+      - CONFIG_PORT=8888
+      - SERVER_PORT=9091
+
+  event-service:
+    restart: on-failure
+    build: core/event-service
+    image: event-service
+    container_name: "event-service"
+    ports:
+      - "9092:9092"
+    depends_on:
+      discovery-server:
+        condition: service_healthy
+      config-server:
+        condition: service_healthy
+      stats-server:
+        condition: service_healthy
+      event-db:
+        condition: service_healthy
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://event-db:5432/event_db
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+      - DB_NAME=event_db
+      - SPRING_DATASOURCE_USERNAME=user
+      - SPRING_DATASOURCE_PASSWORD=password
+      - DB_HOST=event-db
+      - DB_PORT=6543
+      - EUREKA_HOSTNAME=discovery-server
+      - CONFIG_HOSTNAME=config-server
+      - CONFIG_PORT=8888
+      - SERVER_PORT=9092
+
+  request-service:
+    restart: on-failure
+    build: core/request-service
+    image: request-service
+    container_name: "request-service"
+    ports:
+      - "9093:9093"
+    depends_on:
+      discovery-server:
+        condition: service_healthy
+      config-server:
+        condition: service_healthy
+      stats-server:
+        condition: service_healthy
+      request-db:
+        condition: service_healthy
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://request-db:5432/request_db
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+      - DB_NAME=request_db
+      - SPRING_DATASOURCE_USERNAME=user
+      - SPRING_DATASOURCE_PASSWORD=password
+      - DB_HOST=request-db
+      - DB_PORT=6544
+      - EUREKA_HOSTNAME=discovery-server
+      - CONFIG_HOSTNAME=config-server
+      - CONFIG_PORT=8888
+      - SERVER_PORT=9093
+
+  user-service:
+    restart: on-failure
+    build: core/user-service
+    image: user-service
+    container_name: "user-service"
+    ports:
+      - "9094:9094"
+    depends_on:
+      discovery-server:
+        condition: service_healthy
+      config-server:
+        condition: service_healthy
+      stats-server:
+        condition: service_healthy
+      user-db:
+        condition: service_healthy
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://user-db:5432/user_db
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+      - DB_NAME=user_db
+      - SPRING_DATASOURCE_USERNAME=user
+      - SPRING_DATASOURCE_PASSWORD=password
+      - DB_HOST=user-db
+      - DB_PORT=6545
+      - EUREKA_HOSTNAME=discovery-server
+      - CONFIG_HOSTNAME=config-server
+      - CONFIG_PORT=8888
+      - SERVER_PORT=9094
+
   stats-db:
     image: postgres:16.1
     container_name: "stats-db"
@@ -105,49 +223,73 @@ services:
       retries: 5
       start_period: 20s
 
-  ewm-service:
-    restart: on-failure
-    build: core/main-service
-    image: ewm-main-service
-    container_name: "ewm-main-service"
-    ports:
-      - "8081:8081"
-    depends_on:
-      discovery-server:
-        condition: service_healthy
-      config-server:
-        condition: service_healthy
-      stats-server:
-        condition: service_healthy
-      main-db:
-        condition: service_healthy
-    environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://main-db:5432/main_db
-      - POSTGRES_USER=user
-      - POSTGRES_PASSWORD=password
-      - DB_NAME=main_db
-      - SPRING_DATASOURCE_USERNAME=user
-      - SPRING_DATASOURCE_PASSWORD=password
-      - DB_HOST=main-db
-      - DB_PORT=6542
-      - EUREKA_HOSTNAME=discovery-server
-      - CONFIG_HOSTNAME=config-server
-      - CONFIG_PORT=8888
-      - SERVER_PORT=8081
-
-  main-db:
+  comment-db:
     image: postgres:16.1
-    container_name: "main-db"
+    container_name: "comment-db"
     ports:
       - "6542:5432"
     volumes:
-      - /var/lib/postgresql/main-service
+      - /var/lib/postgresql/comment-service
     environment:
-      - POSTGRES_DB=main_db
+      - POSTGRES_DB=comment_db
       - POSTGRES_USER=user
       - POSTGRES_PASSWORD=password
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U user -d main_db"]
+      test: ["CMD-SHELL", "pg_isready -U user -d comment_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  event-db:
+    image: postgres:16.1
+    container_name: "event-db"
+    ports:
+      - "6543:5432"
+    volumes:
+      - /var/lib/postgresql/event-service
+    environment:
+      - POSTGRES_DB=event_db
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d event_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  request-db:
+    image: postgres:16.1
+    container_name: "request-db"
+    ports:
+      - "6544:5432"
+    volumes:
+      - /var/lib/postgresql/request-service
+    environment:
+      - POSTGRES_DB=request_db
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d request_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  user-db:
+    image: postgres:16.1
+    container_name: "user-db"
+    ports:
+      - "6545:5432"
+    volumes:
+      - /var/lib/postgresql/user-service
+    environment:
+      - POSTGRES_DB=user_db
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d user_db"]
       interval: 10s
       timeout: 5s
       retries: 5
