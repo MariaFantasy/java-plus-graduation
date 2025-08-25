@@ -8,7 +8,7 @@ spring:
     driverClassName: org.postgresql.Driver
     username: login
     password: password
-    url: jdbc:postgresql://localhost:5432/event_service_db
+    url: jdbc:postgresql://localhost:6543/event_db
   jpa:
     hibernate:
       ddl-auto: update
