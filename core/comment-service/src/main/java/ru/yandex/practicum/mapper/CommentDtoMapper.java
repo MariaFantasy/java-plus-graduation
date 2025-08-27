@@ -24,7 +24,15 @@ public interface CommentDtoMapper {
 
     List<CommentDto> mapReplies(List<Comment> replies);
 
+    default UserShortDto mapAuthorId(Long authorId) {
+        if (authorId == null) return null;
+        UserShortDto dto = new UserShortDto();
+        dto.setId(authorId);
+        return dto;
+    }
+
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "eventId", source = "event")
     @Mapping(target = "authorId", ignore = true)
     @Mapping(target = "replyOn", ignore = true)
     @Mapping(target = "replies", ignore = true)
