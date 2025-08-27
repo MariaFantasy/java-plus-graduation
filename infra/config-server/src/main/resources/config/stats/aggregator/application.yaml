@@ -1,0 +1,15 @@
+server:
+  port: 0
+
+kafka:
+  bootstrap-servers: localhost:9092
+  key_serializer_class: org.apache.kafka.common.serialization.StringSerializer
+  value_serializer_class: ru.yandex.practicum.mapper.GeneralAvroSerializer
+  key_deserializer_class: org.apache.kafka.common.serialization.StringDeserializer
+  value_deserializer_class: ru.yandex.practicum.mapper.UserActionDeserializer
+  aggregator_producer_client: AggregatorProducer
+  aggregator_consumer_client: AggregatorConsumer
+  aggregator_consumer_group: aggregator-group
+  topic:
+    action: stats.user-actions.v1
+    similarity: stats.events-similarity.v1
