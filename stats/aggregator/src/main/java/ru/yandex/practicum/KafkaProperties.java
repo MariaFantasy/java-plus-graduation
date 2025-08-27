@@ -11,6 +11,11 @@ public class KafkaProperties {
     private String bootstrapServers;
     private String keySerializerClass;
     private String valueSerializerClass;
+    private String keyDeserializerClass;
+    private String valueDeserializerClass;
+    private String aggregatorProducerClient;
+    private String aggregatorConsumerClient;
+    private String aggregatorConsumerGroup;
     private Topic topic;
 
     @Data

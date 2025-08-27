@@ -18,7 +18,7 @@ public class CollectorServiceImpl implements CollectorService {
     @Override
     public void loadUserAction(UserActionProto userAction) {
         log.info("Start user action save {}", userAction);
-        kafkaProducer.send(userActionMapper.mapToAvro(userAction), kafkaProperties.getTopic().getSensor());
+        kafkaProducer.send(userActionMapper.mapToAvro(userAction), kafkaProperties.getTopic().getAction());
         log.info("Success user action save {}", userAction);
     }
 }

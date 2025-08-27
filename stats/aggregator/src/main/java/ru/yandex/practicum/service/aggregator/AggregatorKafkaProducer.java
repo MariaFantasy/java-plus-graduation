@@ -1,4 +1,4 @@
-package ru.yandex.practicum.service;
+package ru.yandex.practicum.service.aggregator;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.avro.specific.SpecificRecordBase;
@@ -13,14 +13,15 @@ import java.util.Properties;
 
 @Slf4j
 @Service
-public class CollectorKafkaProducer {
+public class AggregatorKafkaProducer {
     private final Producer<String, SpecificRecordBase> producer;
 
-    public CollectorKafkaProducer(KafkaProperties kafkaProperties) {
+    public AggregatorKafkaProducer(KafkaProperties kafkaProperties) {
         Properties config = new Properties();
         config.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaProperties.getBootstrapServers());
         config.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, kafkaProperties.getKeySerializerClass());
         config.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, kafkaProperties.getValueSerializerClass());
+        config.put(ProducerConfig.CLIENT_ID_CONFIG, kafkaProperties.getAggregatorProducerClient());
         producer = new KafkaProducer<>(config);
     }
 
@@ -28,6 +29,10 @@ public class CollectorKafkaProducer {
         ProducerRecord<String, SpecificRecordBase> record = new ProducerRecord<>(topic, event);
         producer.send(record);
         log.info("В кафку {} отправлено событие с телом {}", topic, event);
+    }
+
+    public void flush() {
+        producer.flush();
     }
 
     public void close() {
