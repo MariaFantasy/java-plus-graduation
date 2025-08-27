@@ -1,5 +1,6 @@
 package ru.yandex.practicum.service.similarity;
 
+import org.springframework.stereotype.Component;
 import ru.yandex.practicum.ewm.stats.avro.ActionTypeAvro;
 import ru.yandex.practicum.ewm.stats.avro.EventSimilarityAvro;
 import ru.yandex.practicum.ewm.stats.avro.UserActionAvro;
@@ -10,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Component
 public class SimilarityCalculatorServiceImpl implements SimilarityCalculatorService {
     // Матрица весов. Событие: Клиент: Вес
     private final Map<Long, Map<Long, Double>> weights = new HashMap<>();
