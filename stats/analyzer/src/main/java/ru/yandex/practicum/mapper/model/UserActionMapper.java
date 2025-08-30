@@ -10,6 +10,8 @@ import ru.yandex.practicum.model.UserAction;
 @Mapper(componentModel = "spring")
 public interface UserActionMapper {
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "actionType", source = "actionType")
+    @Mapping(target = "actionWeight", expression = "java(mapWeight(userActionAvro.getActionType()))")
     UserAction mapFromAvro(UserActionAvro userActionAvro);
 
     default ActionType mapActionType(ActionTypeAvro actionType) {
@@ -20,5 +22,14 @@ public interface UserActionMapper {
             default -> throw new IllegalArgumentException("Unknown User Action Type: " + actionType);
         };
         return mappedActionType;
+    }
+
+    default double mapWeight(ActionTypeAvro actionType) {
+        return switch (actionType) {
+            case VIEW -> 0.4;
+            case REGISTER -> 0.8;
+            case LIKE -> 1.0;
+            default -> throw new IllegalArgumentException("Unknown User Action Type: " + actionType);
+        };
     }
 }

@@ -326,3 +326,21 @@ services:
       timeout: 5s
       retries: 5
       start_period: 20s
+
+  analyzer-db:
+    image: postgres:16.1
+    container_name: "analyzer-db"
+    ports:
+      - "6546:5432"
+    volumes:
+      - /var/lib/postgresql/stats
+    environment:
+      - POSTGRES_DB=analyzer_db
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d analyzer_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
