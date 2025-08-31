@@ -95,7 +95,7 @@ public class RecommendationServiceImpl implements RecommendationService {
 //                .build()
 //        )
 //                .collect(Collectors.toCollection(ArrayList::new));
-        return List.of();
+        throw new RuntimeException("Start getRecommendationsForUser");
     }
 
     public List<RecommendedEventProto> getSimilarEvents(SimilarEventsRequestProto request) {
@@ -121,25 +121,23 @@ public class RecommendationServiceImpl implements RecommendationService {
 //                    .build()
 //            )
 //            .collect(Collectors.toCollection(ArrayList::new));
-        return List.of();
+        throw new RuntimeException("Start getSimilarEvents");
     }
 
     public List<RecommendedEventProto> getInteractionsCount(InteractionsCountRequestProto request) {
-//        final List<Long> eventIds = request.getEventIdList();
-//        final List<UserAction> userActions = userActionService.getMaxWeightedForEvents(eventIds);
-//        final Map<Long, Double> eventsWithSum = userActions.stream()
-//                .collect(Collectors.groupingBy(
-//                        UserAction::getEventId,
-//                        Collectors.summingDouble(UserAction::getActionWeight)
-//                ));
-//        return eventsWithSum.keySet().stream()
-//                .map(e -> RecommendedEventProto.newBuilder()
-//                        .setEventId(e)
-//                        .setScore(eventsWithSum.get(e))
-//                        .build()
-//                )
-//                .collect(Collectors.toCollection(ArrayList::new));
-        throw new RuntimeException("Start getInteractionsCount");
-//        return List.of();
+        final List<Long> eventIds = request.getEventIdList();
+        final List<UserAction> userActions = userActionService.getMaxWeightedForEvents(eventIds);
+        final Map<Long, Double> eventsWithSum = userActions.stream()
+                .collect(Collectors.groupingBy(
+                        UserAction::getEventId,
+                        Collectors.summingDouble(UserAction::getActionWeight)
+                ));
+        return eventsWithSum.keySet().stream()
+                .map(e -> RecommendedEventProto.newBuilder()
+                        .setEventId(e)
+                        .setScore(eventsWithSum.get(e))
+                        .build()
+                )
+                .collect(Collectors.toCollection(ArrayList::new));
     }
 }
