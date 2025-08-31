@@ -27,6 +27,7 @@ public class UserAction {
     private Long eventId;
 
     @Column(name = "action_type")
+    @Enumerated(EnumType.STRING)
     private ActionType actionType;
 
     @Column(name = "action_weight")
