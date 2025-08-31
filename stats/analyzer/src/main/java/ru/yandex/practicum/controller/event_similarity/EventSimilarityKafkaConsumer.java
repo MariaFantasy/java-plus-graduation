@@ -25,9 +25,9 @@ public class EventSimilarityKafkaConsumer {
         log.info("Connection to Kafka: BOOTSTRAP_SERVERS_CONFIG={}, KEY_DESERIALIZER_CLASS_CONFIG={}, VALUE_DESERIALIZER_CLASS_CONFIG={}, CLIENT_ID_CONFIG={}, GROUP_ID_CONFIG={}",
                 kafkaProperties.getBootstrapServers(),
                 kafkaProperties.getKeyDeserializerClass(),
-                kafkaProperties.getAction().getValueDeserializerClass(),
-                kafkaProperties.getAction().getConsumerClient(),
-                kafkaProperties.getAction().getConsumerGroup()
+                kafkaProperties.getSimilarity().getValueDeserializerClass(),
+                kafkaProperties.getSimilarity().getConsumerClient(),
+                kafkaProperties.getSimilarity().getConsumerGroup()
         );
         config.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaProperties.getBootstrapServers());
         config.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, kafkaProperties.getKeyDeserializerClass());

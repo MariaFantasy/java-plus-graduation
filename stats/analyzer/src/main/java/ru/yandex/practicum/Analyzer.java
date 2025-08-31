@@ -24,8 +24,6 @@ public class Analyzer {
         userActionStarterThread.setName("UserAction");
         userActionStarterThread.start();
 
-        Thread eventSimilarityStarterThread = new Thread(eventSimilarityStarter);
-        eventSimilarityStarterThread.setName("EventSimilarity");
-        eventSimilarityStarterThread.start();
+        eventSimilarityStarter.run();
     }
 }
