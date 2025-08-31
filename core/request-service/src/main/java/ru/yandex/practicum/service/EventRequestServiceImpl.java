@@ -2,6 +2,7 @@ package ru.yandex.practicum.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.CollectorClient;
 import ru.yandex.practicum.dto.*;
 import ru.yandex.practicum.exception.ConflictException;
 import ru.yandex.practicum.exception.ForbiddenException;
@@ -12,6 +13,7 @@ import ru.yandex.practicum.mapper.EventRequestDtoMapper;
 import ru.yandex.practicum.model.EventRequest;
 import ru.yandex.practicum.storage.EventRequestRepository;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.time.LocalDateTime;
@@ -20,8 +22,11 @@ import java.util.stream.Collectors;
 @Service("eventRequestServiceImpl")
 @RequiredArgsConstructor
 public class EventRequestServiceImpl implements EventRequestService {
+    private static final String ACTION_TYPE = "REGISTER";
+
     private final UserClient userClient;
     private final EventClient eventClient;
+    private final CollectorClient collectorClient;
     private final EventRequestRepository eventRequestRepository;
     private final EventRequestDtoMapper eventRequestDtoMapper;
 
@@ -53,6 +58,8 @@ public class EventRequestServiceImpl implements EventRequestService {
         if (status.equals(EventRequestStatus.CONFIRMED)) {
             eventClient.updateEventConfirmedRequests(event.getId(), event.getConfirmedRequests() + 1);
         }
+
+        collectorClient.collectUserAction(userId, eventId, ACTION_TYPE, Instant.now());
 
         return eventRequestDtoMapper.mapToResponseDto(createdRequest);
     }
@@ -164,5 +171,11 @@ public class EventRequestServiceImpl implements EventRequestService {
         }
 
         eventClient.updateEventConfirmedRequests(event.getId(), currentConfirmed);
+    }
+
+    @Override
+    public Boolean isUserRegisterOnEvent(Long userId, Long eventId) {
+        final EventRequest request = eventRequestRepository.findByEventIdAndRequesterId(eventId, userId);
+        return request != null;
     }
 }

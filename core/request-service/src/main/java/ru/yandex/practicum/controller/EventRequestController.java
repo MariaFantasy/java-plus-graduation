@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.dto.EventRequestStatusUpdateRequest;
 import ru.yandex.practicum.dto.EventRequestStatusUpdateResult;
 import ru.yandex.practicum.dto.ParticipationRequestDto;
+import ru.yandex.practicum.feign.client.EventRequestClient;
 import ru.yandex.practicum.service.EventRequestService;
 
 import java.util.Collection;
@@ -15,7 +16,7 @@ import java.util.Collection;
 @RestController
 @RequestMapping("/users/{userId}")
 @RequiredArgsConstructor
-public class EventRequestController {
+public class EventRequestController implements EventRequestClient {
     private final EventRequestService eventRequestService;
 
     @PostMapping("/requests")
@@ -56,6 +57,14 @@ public class EventRequestController {
         log.info("Пришел PATCH запрос /users/{}/events/{}/requests с телом {}", userId, eventId, requestsToUpdate);
         final EventRequestStatusUpdateResult result = eventRequestService.updateStatus(userId, eventId, requestsToUpdate);
         log.info("Отправлен ответ PATCH /users/{}/events/{}/requests с телом: {}", userId, eventId, result);
+        return result;
+    }
+
+    @Override
+    public Boolean isUserRegisterOnEvent(@RequestParam Long userId, @RequestParam Long eventId) {
+        log.info("Пришел GET запрос /users/{}/events/{eventId}/isregister", userId, eventId);
+        final Boolean result = eventRequestService.isUserRegisterOnEvent(userId, eventId);
+        log.info("Отправлен ответ GET /users/{}/events/{}/requests с телом: {}", userId, eventId, result);
         return result;
     }
 }
