@@ -1,16 +1,6 @@
 server:
   port: 0
 
-grpc:
-  server:
-    port: 0
-  client:
-    analyzer:
-      address: 'discovery:///analyzer'
-      enableKeepAlive: true
-      keepAliveWithoutCalls: true
-      negotiationType: plaintext
-
 kafka:
   bootstrap-servers: localhost:9092
   key_deserializer_class: org.apache.kafka.common.serialization.StringDeserializer
@@ -25,9 +15,17 @@ kafka:
     consumer_group: analyzer-event-similarity-group
     topic: stats.events-similarity.v1
 
+grpc:
+  server:
+    port: 0
+  client:
+    analyzer:
+      address: 'discovery:///analyzer'
+      enableKeepAlive: true
+      keepAliveWithoutCalls: true
+      negotiationType: plaintext
+
 spring:
-  application:
-    name: analyzer
   datasource:
     driverClassName: org.postgresql.Driver
     username: login
