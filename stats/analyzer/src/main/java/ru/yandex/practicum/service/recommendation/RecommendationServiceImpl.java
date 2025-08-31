@@ -139,6 +139,7 @@ public class RecommendationServiceImpl implements RecommendationService {
 //                        .build()
 //                )
 //                .collect(Collectors.toCollection(ArrayList::new));
-        return List.of();
+        throw new RuntimeException("Start getInteractionsCount");
+//        return List.of();
     }
 }
