@@ -22,7 +22,13 @@ public class UserActionKafkaConsumer {
 
     public UserActionKafkaConsumer(KafkaProperties kafkaProperties) {
         Properties config = new Properties();
-        log.info("Connection to Kafka: BOOTSTRAP_SERVERS_CONFIG={}, KEY_DESERIALIZER_CLASS_CONFIG={}, VALUE_DESERIALIZER_CLASS_CONFIG={}, CLIENT_ID_CONFIG={}, GROUP_ID_CONFIG={}");
+        log.info("Connection to Kafka: BOOTSTRAP_SERVERS_CONFIG={}, KEY_DESERIALIZER_CLASS_CONFIG={}, VALUE_DESERIALIZER_CLASS_CONFIG={}, CLIENT_ID_CONFIG={}, GROUP_ID_CONFIG={}",
+                kafkaProperties.getBootstrapServers(),
+                kafkaProperties.getKeyDeserializerClass(),
+                kafkaProperties.getAction().getValueDeserializerClass(),
+                kafkaProperties.getAction().getConsumerClient(),
+                kafkaProperties.getAction().getConsumerGroup()
+        );
         config.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaProperties.getBootstrapServers());
         config.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, kafkaProperties.getKeyDeserializerClass());
         config.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, kafkaProperties.getAction().getValueDeserializerClass());
