@@ -1,6 +1,3 @@
-server:
-  port: 0
-
 kafka:
   bootstrap-servers: localhost:9092
   key_serializer_class: org.apache.kafka.common.serialization.StringSerializer
@@ -11,3 +8,9 @@ kafka:
 grpc:
   server:
     port: 0
+  client:
+    collector:
+      address: 'discovery:///collector'
+      enableKeepAlive: true
+      keepAliveWithoutCalls: true
+      negotiationType: plaintext
