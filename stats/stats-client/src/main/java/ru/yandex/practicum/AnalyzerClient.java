@@ -2,7 +2,7 @@ package ru.yandex.practicum;
 
 import net.devh.boot.grpc.client.inject.GrpcClient;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.grpc.stats.analyzer.RecommendationsControllerGrpc;
+import ru.yandex.practicum.stats.service.dashboard.RecommendationsControllerGrpc;
 import ru.yandex.practicum.grpc.stats.event_recommendations.InteractionsCountRequestProto;
 import ru.yandex.practicum.grpc.stats.event_recommendations.RecommendedEventProto;
 import ru.yandex.practicum.grpc.stats.event_recommendations.SimilarEventsRequestProto;
