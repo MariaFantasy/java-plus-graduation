@@ -96,8 +96,6 @@ services:
         condition: service_healthy
       config-server:
         condition: service_healthy
-      stats-server:
-        condition: service_healthy
       comment-db:
         condition: service_healthy
     environment:
@@ -125,8 +123,6 @@ services:
       discovery-server:
         condition: service_healthy
       config-server:
-        condition: service_healthy
-      stats-server:
         condition: service_healthy
       event-db:
         condition: service_healthy
@@ -156,8 +152,6 @@ services:
         condition: service_healthy
       config-server:
         condition: service_healthy
-      stats-server:
-        condition: service_healthy
       request-db:
         condition: service_healthy
     environment:
@@ -185,8 +179,6 @@ services:
       discovery-server:
         condition: service_healthy
       config-server:
-        condition: service_healthy
-      stats-server:
         condition: service_healthy
       user-db:
         condition: service_healthy
