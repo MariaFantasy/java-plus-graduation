@@ -40,15 +40,20 @@ public class SimilarityCalculatorServiceImpl implements SimilarityCalculatorServ
         }
         final Map<Long, Double> eventVector = weights.get(eventId);
         if (!eventVector.containsKey(userId)) {
+            log.info("Записываем вес события {} для пользователя {}: значение={}", eventId, userId, weight);
             eventVector.put(userId, 0.);
             final List<EventSimilarityAvro> updatedSimilarity = recalculate(eventId, userId, weight);
             eventVector.put(userId, weight);
+            log.info("Записанное значение:{}\nЗаписанные похожие события:{}", eventVector.get(userId), updatedSimilarity);
             return updatedSimilarity;
         } else if (eventVector.get(userId) < weight) {
+            log.info("Обновляем вес события {} для пользователя {}: старое значение={}, новое значение={}", eventId, userId, eventVector.get(userId), weight);
             final List<EventSimilarityAvro> updatedSimilarity = recalculate(eventId, userId, weight);
             eventVector.put(userId, weight);
+            log.info("Записанное значение:{}\nЗаписанные похожие события:{}", eventVector.get(userId), updatedSimilarity);
             return updatedSimilarity;
         }
+        log.info("Вес события {} для пользователя {} не обновляется: старое значение={}, новое значение={}", eventId, userId, eventVector.get(userId), weight);
         return List.of();
     }
 
@@ -81,7 +86,6 @@ public class SimilarityCalculatorServiceImpl implements SimilarityCalculatorServ
                 eventAVector.put(eventB, eventAVector.get(eventB) + newValue - oldValue);
                 if (eventA != eventB) {
                     updatedSimilarity.add(new EventSimilarityAvro(eventA, eventB, eventAVector.get(eventB), Instant.now()));
-                    updatedSimilarity.add(new EventSimilarityAvro(eventB, eventA, eventAVector.get(eventB), Instant.now()));
                 }
             }
         }
