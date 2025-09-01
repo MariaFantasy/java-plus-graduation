@@ -9,15 +9,14 @@ import java.util.List;
 public interface UserActionRepository extends JpaRepository<UserAction, Long> {
 
     @Query("""
-        SELECT ua
+        SELECT
+            ua.eventId,
+            ua.userId,
+            MAX(ua.actionWeight) as actionWeight,
+            MAX(ua.timestamp) as timestamp
         FROM UserAction AS ua
         WHERE ua.eventId IN ?1
-            AND ua.actionWeight = (
-                SELECT MAX(innerUa.actionWeight)
-                FROM UserAction AS innerUa
-                WHERE innerUa.eventId = ua.eventId
-                    AND innerUa.userId = ua.userId
-            )
+        GROUP BY ua.eventId, ua.userId
     """)
     List<UserAction> getMaxWeightedForEvents(List<Long> eventId);
 
