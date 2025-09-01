@@ -42,17 +42,22 @@ public class SimilarityCalculatorServiceImpl implements SimilarityCalculatorServ
         if (!eventVector.containsKey(userId)) {
             log.info("Записываем вес события {} для пользователя {}: значение={}", eventId, userId, weight);
             eventVector.put(userId, 0.);
+            log.info("Weights:{}", weights.toString());
             final List<EventSimilarityAvro> updatedSimilarity = recalculate(eventId, userId, weight);
             eventVector.put(userId, weight);
+            log.info("Weights:{}", weights.toString());
             log.info("Записанное значение:{}\nЗаписанные похожие события:{}", eventVector.get(userId), updatedSimilarity);
             return updatedSimilarity;
         } else if (eventVector.get(userId) < weight) {
             log.info("Обновляем вес события {} для пользователя {}: старое значение={}, новое значение={}", eventId, userId, eventVector.get(userId), weight);
+            log.info("Weights:{}", weights.toString());
             final List<EventSimilarityAvro> updatedSimilarity = recalculate(eventId, userId, weight);
             eventVector.put(userId, weight);
+            log.info("Weights:{}", weights.toString());
             log.info("Записанное значение:{}\nЗаписанные похожие события:{}", eventVector.get(userId), updatedSimilarity);
             return updatedSimilarity;
         }
+        log.info("Weights:{}", weights.toString());
         log.info("Вес события {} для пользователя {} не обновляется: старое значение={}, новое значение={}", eventId, userId, eventVector.get(userId), weight);
         return List.of();
     }
@@ -80,8 +85,10 @@ public class SimilarityCalculatorServiceImpl implements SimilarityCalculatorServ
             }
             double weightA = weights.get(eventA).getOrDefault(userId, 0.0);
             double weightB = weights.get(eventB).getOrDefault(userId, 0.0);
+            log.info("weightA={}, weightB={}", weightA, weightB);
             double oldValue = Math.min(weightA, weightB);
             double newValue = Math.min(weight, isLess ? weightA : (eventA == eventB) ? weight : weightB);
+            log.info("oldValue={}, newValue={}", oldValue, newValue);
             if (oldValue != newValue) {
                 eventAVector.put(eventB, eventAVector.get(eventB) + newValue - oldValue);
                 if (eventA != eventB) {
