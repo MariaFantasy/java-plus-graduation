@@ -68,14 +68,26 @@ public class SimilarityCalculatorServiceImpl implements SimilarityCalculatorServ
     }
 
     private List<EventSimilarityAvro> recalculate(Long eventId, Long userId, Double weight) {
+        // Обновляем диагональ (скалярное произведение события на себя же)
+        if (!eventDotProduct.containsKey(eventId)) {
+            eventDotProduct.put(eventId, new HashMap<>());
+        }
+        if (!eventDotProduct.get(eventId).containsKey(userId)) {
+            eventDotProduct.get(eventId).put(userId, weight);
+        } else if (eventDotProduct.get(eventId).get(userId) < weight) {
+            eventDotProduct.get(eventId).put(userId, weight);
+        }
+
+        // Обновляем остальные элементы матрицы, с колонкой или строчкой, равной eventId
         List<EventSimilarityAvro> updatedSimilarity = new ArrayList<>();
         long eventA;
         long eventB;
         boolean isLess;
-        boolean isEqualPassed = false;
         for (Long otherEventId: weights.keySet()) {
+            if (otherEventId.equals(eventId)) {
+                continue;
+            }
             isLess = eventId < otherEventId;
-            isEqualPassed = isEqualPassed || eventId.equals(otherEventId);
             if (isLess) {
                 eventA = eventId;
                 eventB = otherEventId;
@@ -95,18 +107,16 @@ public class SimilarityCalculatorServiceImpl implements SimilarityCalculatorServ
             log.info("A={}, B={}, userId={}", eventA, eventB, userId);
             log.info("weightA={}, weightB={}", weightA, weightB);
             double oldValue = Math.min(weightA, weightB);
-            double newValue = Math.min(weight, isLess ? weightB : (eventA == eventB) ? weight : weightA);
+            double newValue = Math.min(weight, isLess ? weightB : weightA);
             log.info("oldValue={}, newValue={}", oldValue, newValue);
             if (Math.abs(oldValue - newValue) >= 0.01) {
                 log.info("Old similarity coefficient={}", eventAVector.get(eventB));
                 eventAVector.put(eventB, eventAVector.get(eventB) + newValue - oldValue);
                 log.info("New similarity coefficient={}", eventAVector.get(eventB));
-                if (eventA != eventB) {
-                    double eventADenominator = Math.sqrt(eventDotProduct.getOrDefault(eventA, new HashMap<>()).getOrDefault(eventA, 0.0) + ((isEqualPassed && isLess)? 0.0 : weight - weights.get(eventId).get(userId)));
-                    double eventBDenominator = Math.sqrt(eventDotProduct.getOrDefault(eventB, new HashMap<>()).getOrDefault(eventB, 0.0) + (isEqualPassed && !isLess? 0.0 : weight - weights.get(eventA).get(userId)));
-                    log.info("Event A denominator={}, event B denominator={}", eventADenominator, eventBDenominator);
-                    updatedSimilarity.add(new EventSimilarityAvro(eventA, eventB, eventAVector.get(eventB) / eventADenominator / eventBDenominator, Instant.now()));
-                }
+                double eventADenominator = Math.sqrt(eventDotProduct.get(eventA).get(eventA));
+                double eventBDenominator = Math.sqrt(eventDotProduct.get(eventB).get(eventB));
+                log.info("Event A denominator={}, event B denominator={}", eventADenominator, eventBDenominator);
+                updatedSimilarity.add(new EventSimilarityAvro(eventA, eventB, eventAVector.get(eventB) / eventADenominator / eventBDenominator, Instant.now()));
             }
         }
         return updatedSimilarity;
