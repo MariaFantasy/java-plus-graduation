@@ -74,8 +74,8 @@ public class SimilarityCalculatorServiceImpl implements SimilarityCalculatorServ
         }
         if (!eventDotProduct.get(eventId).containsKey(eventId)) {
             eventDotProduct.get(eventId).put(eventId, weight);
-        } else if (eventDotProduct.get(eventId).get(eventId) < weight) {
-            eventDotProduct.get(eventId).put(eventId, weight);
+        } else if (weights.get(eventId).get(userId) < weight) {
+            eventDotProduct.get(eventId).put(eventId, eventDotProduct.get(eventId).get(eventId) + weight - weights.get(eventId).get(userId));
         }
 
         // Обновляем остальные элементы матрицы, с колонкой или строчкой, равной eventId
