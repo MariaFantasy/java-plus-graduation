@@ -72,10 +72,10 @@ public class SimilarityCalculatorServiceImpl implements SimilarityCalculatorServ
         if (!eventDotProduct.containsKey(eventId)) {
             eventDotProduct.put(eventId, new HashMap<>());
         }
-        if (!eventDotProduct.get(eventId).containsKey(userId)) {
-            eventDotProduct.get(eventId).put(userId, weight);
-        } else if (eventDotProduct.get(eventId).get(userId) < weight) {
-            eventDotProduct.get(eventId).put(userId, weight);
+        if (!eventDotProduct.get(eventId).containsKey(eventId)) {
+            eventDotProduct.get(eventId).put(eventId, weight);
+        } else if (eventDotProduct.get(eventId).get(eventId) < weight) {
+            eventDotProduct.get(eventId).put(eventId, weight);
         }
 
         // Обновляем остальные элементы матрицы, с колонкой или строчкой, равной eventId
