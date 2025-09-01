@@ -79,6 +79,7 @@ public class SimilarityCalculatorServiceImpl implements SimilarityCalculatorServ
                 eventAVector.put(eventB, eventAVector.get(eventB) + newValue - oldValue);
                 if (eventA != eventB) {
                     updatedSimilarity.add(new EventSimilarityAvro(eventA, eventB, eventAVector.get(eventB), Instant.now()));
+                    updatedSimilarity.add(new EventSimilarityAvro(eventB, eventA, eventAVector.get(eventB), Instant.now()));
                 }
             }
         }
