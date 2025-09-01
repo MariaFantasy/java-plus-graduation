@@ -72,8 +72,10 @@ public class SimilarityCalculatorServiceImpl implements SimilarityCalculatorServ
         long eventA;
         long eventB;
         boolean isLess;
+        boolean isEqualPassed = false;
         for (Long otherEventId: weights.keySet()) {
             isLess = eventId < otherEventId;
+            isEqualPassed = isEqualPassed || eventId.equals(otherEventId);
             if (isLess) {
                 eventA = eventId;
                 eventB = otherEventId;
@@ -100,7 +102,10 @@ public class SimilarityCalculatorServiceImpl implements SimilarityCalculatorServ
                 eventAVector.put(eventB, eventAVector.get(eventB) + newValue - oldValue);
                 log.info("New similarity coefficient={}", eventAVector.get(eventB));
                 if (eventA != eventB) {
-                    updatedSimilarity.add(new EventSimilarityAvro(eventA, eventB, eventAVector.get(eventB), Instant.now()));
+                    double eventADenominator = Math.sqrt(eventDotProduct.get(eventA).getOrDefault(eventA, 0.0) + ((isEqualPassed && isLess)? 0.0 : weight - weights.get(eventId).get(userId)));
+                    double eventBDenominator = Math.sqrt(eventDotProduct.get(eventB).getOrDefault(eventB, 0.0) + (isEqualPassed && !isLess? 0.0 : weight - weights.get(eventA).get(userId)));
+                    log.info("Event A denominator={}, event B denominator={}", eventADenominator, eventBDenominator);
+                    updatedSimilarity.add(new EventSimilarityAvro(eventA, eventB, eventAVector.get(eventB) / eventADenominator / eventBDenominator, Instant.now()));
                 }
             }
         }
