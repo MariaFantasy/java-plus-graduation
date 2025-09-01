@@ -49,10 +49,11 @@ public class AggregatorStarter {
     }
 
     public void handleRecord(UserActionAvro avro) {
-        List<EventSimilarityAvro> eventsSimilarity = similarityCalculatorService.getSimilarityEvent(avro);
+        final List<EventSimilarityAvro> eventsSimilarity = similarityCalculatorService.getSimilarityEvent(avro);
+        log.info("Получен список событий для обновления похожести: {}", eventsSimilarity);
         for (EventSimilarityAvro record: eventsSimilarity) {
             producer.send(record, kafkaProperties.getTopic().getSimilarity());
+            log.info("Отправляем в кафку событие схожести событий: {}", record);
         }
-        log.info("Отправляем в кафку событие схожести событий");
     }
 }
