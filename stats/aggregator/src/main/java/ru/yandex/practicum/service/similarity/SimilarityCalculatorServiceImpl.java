@@ -1,5 +1,6 @@
 package ru.yandex.practicum.service.similarity;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.ewm.stats.avro.ActionTypeAvro;
 import ru.yandex.practicum.ewm.stats.avro.EventSimilarityAvro;
@@ -11,6 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @Component
 public class SimilarityCalculatorServiceImpl implements SimilarityCalculatorService {
     // Матрица весов. Событие: Клиент: Вес
@@ -71,8 +73,8 @@ public class SimilarityCalculatorServiceImpl implements SimilarityCalculatorServ
             if (!eventAVector.containsKey(eventB)) {
                 eventAVector.put(eventB, 0.);
             }
-            double weightA = weights.get(eventA).get(userId);
-            double weightB = weights.get(eventB).get(userId);
+            double weightA = weights.get(eventA).getOrDefault(userId, 0.0);
+            double weightB = weights.get(eventB).getOrDefault(userId, 0.0);
             double oldValue = Math.min(weightA, weightB);
             double newValue = Math.min(weight, isLess ? weightA : (eventA == eventB) ? weight : weightB);
             if (oldValue != newValue) {
