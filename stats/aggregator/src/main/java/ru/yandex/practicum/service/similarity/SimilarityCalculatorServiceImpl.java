@@ -60,11 +60,11 @@ public class SimilarityCalculatorServiceImpl implements SimilarityCalculatorServ
         for (Long otherEventId: weights.keySet()) {
             isLess = eventId < otherEventId;
             if (isLess) {
-                eventA = otherEventId;
-                eventB = eventId;
-            } else {
                 eventA = eventId;
                 eventB = otherEventId;
+            } else {
+                eventA = otherEventId;
+                eventB = eventId;
             }
             if (!eventDotProduct.containsKey(eventA)) {
                 eventDotProduct.put(eventA, new HashMap<>());
@@ -81,7 +81,6 @@ public class SimilarityCalculatorServiceImpl implements SimilarityCalculatorServ
                 eventAVector.put(eventB, eventAVector.get(eventB) + newValue - oldValue);
                 if (eventA != eventB) {
                     updatedSimilarity.add(new EventSimilarityAvro(eventA, eventB, eventAVector.get(eventB), Instant.now()));
-                    updatedSimilarity.add(new EventSimilarityAvro(eventB, eventA, eventAVector.get(eventB), Instant.now()));
                 }
             }
         }
