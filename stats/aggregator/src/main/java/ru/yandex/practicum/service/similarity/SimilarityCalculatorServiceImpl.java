@@ -89,7 +89,7 @@ public class SimilarityCalculatorServiceImpl implements SimilarityCalculatorServ
             double oldValue = Math.min(weightA, weightB);
             double newValue = Math.min(weight, isLess ? weightA : (eventA == eventB) ? weight : weightB);
             log.info("oldValue={}, newValue={}", oldValue, newValue);
-            if (oldValue != newValue) {
+            if (Math.abs(oldValue - newValue) < 0.01) {
                 eventAVector.put(eventB, eventAVector.get(eventB) + newValue - oldValue);
                 if (eventA != eventB) {
                     updatedSimilarity.add(new EventSimilarityAvro(eventA, eventB, eventAVector.get(eventB), Instant.now()));
