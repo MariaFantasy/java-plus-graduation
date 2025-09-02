@@ -109,7 +109,7 @@ public class SimilarityCalculatorServiceImpl implements SimilarityCalculatorServ
             double oldValue = Math.min(weightA, weightB);
             double newValue = Math.min(weight, isLess ? weightB : weightA);
             log.info("oldValue={}, newValue={}", oldValue, newValue);
-            if (Math.abs(oldValue - newValue) >= 0.01) {
+            if (Math.abs(eventAVector.get(eventB) + newValue - oldValue) >= 0.01) {
                 log.info("Old similarity coefficient={}", eventAVector.get(eventB));
                 eventAVector.put(eventB, eventAVector.get(eventB) + newValue - oldValue);
                 log.info("New similarity coefficient={}", eventAVector.get(eventB));
