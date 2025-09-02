@@ -113,10 +113,12 @@ public class SimilarityCalculatorServiceImpl implements SimilarityCalculatorServ
                 log.info("Old similarity coefficient={}", eventAVector.get(eventB));
                 eventAVector.put(eventB, eventAVector.get(eventB) + newValue - oldValue);
                 log.info("New similarity coefficient={}", eventAVector.get(eventB));
-                double eventADenominator = Math.sqrt(eventDotProduct.get(eventA).get(eventA));
-                double eventBDenominator = Math.sqrt(eventDotProduct.get(eventB).get(eventB));
-                log.info("Event A denominator={}, event B denominator={}", eventADenominator, eventBDenominator);
-                updatedSimilarity.add(new EventSimilarityAvro(eventA, eventB, eventAVector.get(eventB) / eventADenominator / eventBDenominator, Instant.now()));
+                if (weights.get(eventA).containsKey(userId) && weights.get(eventB).containsKey(userId)) {
+                    double eventADenominator = Math.sqrt(eventDotProduct.get(eventA).get(eventA));
+                    double eventBDenominator = Math.sqrt(eventDotProduct.get(eventB).get(eventB));
+                    log.info("Event A denominator={}, event B denominator={}", eventADenominator, eventBDenominator);
+                    updatedSimilarity.add(new EventSimilarityAvro(eventA, eventB, eventAVector.get(eventB) / eventADenominator / eventBDenominator, Instant.now()));
+                }
             }
         }
         return updatedSimilarity;
