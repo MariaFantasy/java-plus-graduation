@@ -7,10 +7,8 @@ import ru.yandex.practicum.ewm.stats.avro.EventSimilarityAvro;
 import ru.yandex.practicum.ewm.stats.avro.UserActionAvro;
 
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Component
@@ -31,7 +29,9 @@ public class SimilarityCalculatorServiceImpl implements SimilarityCalculatorServ
             case ActionTypeAvro.LIKE -> 1.0;
             default -> 0.0;
         };
-        return updateWeight(avro.getEventId(), avro.getUserId(), weight);
+        return updateWeight(avro.getEventId(), avro.getUserId(), weight).stream()
+                .sorted(Comparator.comparing(e -> e.getEventA() + e.getEventB()))
+                .collect(Collectors.toList());
     }
 
     private List<EventSimilarityAvro> updateWeight(Long eventId, Long userId, Double weight) {
