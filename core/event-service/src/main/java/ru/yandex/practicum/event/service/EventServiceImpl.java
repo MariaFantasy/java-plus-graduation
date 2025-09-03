@@ -39,8 +39,8 @@ import java.util.stream.Collectors;
 @Service("eventServiceImpl")
 @RequiredArgsConstructor
 public class EventServiceImpl implements EventService {
-    private static final String VIEW_ACTION_TYPE = "VIEW";
-    private static final String LIKE_ACTION_TYPE = "LIKE";
+    private static final String VIEW_ACTION_TYPE = "ACTION_VIEW";
+    private static final String LIKE_ACTION_TYPE = "ACTION_LIKE";
 
     private final UserClient userClient;
     private final EventRequestClient requestClient;

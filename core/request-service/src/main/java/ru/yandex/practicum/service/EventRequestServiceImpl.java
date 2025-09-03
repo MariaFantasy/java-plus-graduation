@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 @Service("eventRequestServiceImpl")
 @RequiredArgsConstructor
 public class EventRequestServiceImpl implements EventRequestService {
-    private static final String ACTION_TYPE = "REGISTER";
+    private static final String ACTION_TYPE = "ACTION_REGISTER";
 
     private final UserClient userClient;
     private final EventClient eventClient;
