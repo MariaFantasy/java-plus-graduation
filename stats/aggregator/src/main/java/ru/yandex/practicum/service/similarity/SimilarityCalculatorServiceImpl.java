@@ -40,30 +40,15 @@ public class SimilarityCalculatorServiceImpl implements SimilarityCalculatorServ
         }
         final Map<Long, Double> eventVector = weights.get(eventId);
         if (!eventVector.containsKey(userId)) {
-            log.info("Записываем вес события {} для пользователя {}: значение={}", eventId, userId, weight);
             eventVector.put(userId, 0.);
-            log.info("Weights:{}", weights.toString());
-            log.info("Event Dot Product:{}", eventDotProduct.toString());
             final List<EventSimilarityAvro> updatedSimilarity = recalculate(eventId, userId, weight);
             eventVector.put(userId, weight);
-            log.info("Weights:{}", weights.toString());
-            log.info("Event Dot Product:{}", eventDotProduct.toString());
-            log.info("Записанное значение:{}\nЗаписанные похожие события:{}", eventVector.get(userId), updatedSimilarity);
             return updatedSimilarity;
         } else if (eventVector.get(userId) < weight) {
-            log.info("Обновляем вес события {} для пользователя {}: старое значение={}, новое значение={}", eventId, userId, eventVector.get(userId), weight);
-            log.info("Weights:{}", weights.toString());
-            log.info("Event Dot Product:{}", eventDotProduct.toString());
             final List<EventSimilarityAvro> updatedSimilarity = recalculate(eventId, userId, weight);
             eventVector.put(userId, weight);
-            log.info("Weights:{}", weights.toString());
-            log.info("Event Dot Product:{}", eventDotProduct.toString());
-            log.info("Записанное значение:{}\nЗаписанные похожие события:{}", eventVector.get(userId), updatedSimilarity);
             return updatedSimilarity;
         }
-        log.info("Weights:{}", weights.toString());
-        log.info("Event Dot Product:{}", eventDotProduct.toString());
-        log.info("Вес события {} для пользователя {} не обновляется: старое значение={}, новое значение={}", eventId, userId, eventVector.get(userId), weight);
         return List.of();
     }
 
@@ -104,19 +89,13 @@ public class SimilarityCalculatorServiceImpl implements SimilarityCalculatorServ
             }
             double weightA = weights.get(eventA).getOrDefault(userId, 0.0);
             double weightB = weights.get(eventB).getOrDefault(userId, 0.0);
-            log.info("A={}, B={}, userId={}", eventA, eventB, userId);
-            log.info("weightA={}, weightB={}", weightA, weightB);
             double oldValue = Math.min(weightA, weightB);
             double newValue = Math.min(weight, isLess ? weightB : weightA);
-            log.info("oldValue={}, newValue={}", oldValue, newValue);
             if (Math.abs(eventAVector.get(eventB) + newValue - oldValue) >= 0.01) {
-                log.info("Old similarity coefficient={}", eventAVector.get(eventB));
                 eventAVector.put(eventB, eventAVector.get(eventB) + newValue - oldValue);
-                log.info("New similarity coefficient={}", eventAVector.get(eventB));
                 if (weights.get(eventA).containsKey(userId) && weights.get(eventB).containsKey(userId)) {
                     double eventADenominator = Math.sqrt(eventDotProduct.get(eventA).get(eventA));
                     double eventBDenominator = Math.sqrt(eventDotProduct.get(eventB).get(eventB));
-                    log.info("Event A denominator={}, event B denominator={}", eventADenominator, eventBDenominator);
                     updatedSimilarity.add(new EventSimilarityAvro(eventA, eventB, eventAVector.get(eventB) / eventADenominator / eventBDenominator, Instant.now()));
                 }
             }

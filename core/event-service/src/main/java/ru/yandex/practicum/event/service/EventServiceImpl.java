@@ -217,9 +217,11 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public Collection<EventShortDto> getRecommendations(Long userId, Long maxResults) {
+        log.info("Send Get Recommendations For User: userId={}, maxResults={}", userId, maxResults);
         final List<Long> eventIds = analyzerClient.getRecommendationsForUser(userId, maxResults)
                 .map(RecommendedEventProto::getEventId)
                 .collect(Collectors.toCollection(ArrayList::new));
+        log.info("Successful response: {}", eventIds);
         return findAllById(eventIds);
     }
 
@@ -297,6 +299,7 @@ public class EventServiceImpl implements EventService {
     }
 
     private Double getEventRating(Long eventId) {
+        log.info("Send Get Interactions Count: eventId={}", eventId);
         return analyzerClient.getInteractionsCount(List.of(eventId))
                 .map(RecommendedEventProto::getScore)
                 .findFirst()
