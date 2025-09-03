@@ -45,3 +45,4 @@ spring:
 logging:
   level:
     org.springframework.boot.context.properties: DEBUG
+    io.grpc.netty.shaded.io.netty: DEBUG

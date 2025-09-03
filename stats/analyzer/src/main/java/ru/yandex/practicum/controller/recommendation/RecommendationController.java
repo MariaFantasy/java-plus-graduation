@@ -60,7 +60,7 @@ public class RecommendationController extends RecommendationsControllerGrpc.Reco
         try {
             log.info("Interactions Count Request received {}", request);
             final List<RecommendedEventProto> recommendedEvents = recommendationService.getInteractionsCount(request);
-            log.info("Interactions Count Request {}", recommendedEvents);
+            log.info("Interactions Count Request send response {}", recommendedEvents);
             recommendedEvents.forEach(responseObserver::onNext);
             responseObserver.onCompleted();
         } catch (Exception e) {
