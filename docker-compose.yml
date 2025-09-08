@@ -1,227 +1,35 @@
 services:
-  discovery-server:
-    restart: on-failure
-    build: infra/discovery-server
-    image: discovery-server
-    container_name: "discovery-server"
+  kafka:
+    image: confluentinc/confluent-local:7.4.3
+    hostname: kafka
+    container_name: kafka
     ports:
-      - "8761:8761"
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8761/actuator/health"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+      - "9092:9092" # for client connections
+      - "9101:9101" # JMX
+    restart: unless-stopped
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092'
+      KAFKA_JMX_PORT: 9101
+      KAFKA_JMX_HOSTNAME: localhost
+      KAFKA_PROCESS_ROLES: 'broker,controller'
+      KAFKA_CONTROLLER_QUORUM_VOTERS: '1@kafka:29093'
+      KAFKA_LISTENERS: 'PLAINTEXT://kafka:29092,CONTROLLER://kafka:29093,PLAINTEXT_HOST://0.0.0.0:9092'
+      CLUSTER_ID: 'K0EA9p0yEe6MkAAAAkKsEg'
 
-  config-server:
-    restart: on-failure
-    build: infra/config-server
-    image: config-server
-    container_name: "config-server"
-    ports:
-      - "8888:8888"
+  kafka-init-topics:
+    image: confluentinc/confluent-local:7.4.3
+    container_name: kafka-init-topics
     depends_on:
-      discovery-server:
-        condition: service_healthy
-    environment:
-      - EUREKA_HOSTNAME=discovery-server
-      - SERVER_PORT=8888
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8888/actuator/health"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
-  gateway-server:
-    restart: on-failure
-    build: infra/gateway-server
-    image: gateway-server
-    container_name: "gateway-server"
-    ports:
-      - "8080:8080"
-    depends_on:
-      discovery-server:
-        condition: service_healthy
-      config-server:
-        condition: service_healthy
-    environment:
-      - EUREKA_HOSTNAME=discovery-server
-      - SERVER_PORT=8080
-    healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:8080/actuator/health" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
-  stats-server:
-    restart: on-failure
-    build: stats/stats-server
-    image: ewm-stats-server
-    container_name: "ewm-stats-server"
-    ports:
-      - "9090:9090"
-    depends_on:
-      discovery-server:
-        condition: service_healthy
-      config-server:
-        condition: service_healthy
-      stats-db:
-        condition: service_healthy
-    environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://stats-db:5432/stats
-      - POSTGRES_USER=user
-      - POSTGRES_PASSWORD=password
-      - DB_NAME=stats
-      - SPRING_DATASOURCE_USERNAME=user
-      - SPRING_DATASOURCE_PASSWORD=password
-      - DB_HOST=stats-db
-      - DB_PORT=6541
-      - EUREKA_HOSTNAME=discovery-server
-      - CONFIG_HOSTNAME=config-server
-      - CONFIG_PORT=8888
-      - SERVER_PORT=9090
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9090/actuator/health"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
-  comment-service:
-    restart: on-failure
-    build: core/comment-service
-    image: comment-service
-    container_name: "comment-service"
-    ports:
-      - "9091:9091"
-    depends_on:
-      discovery-server:
-        condition: service_healthy
-      config-server:
-        condition: service_healthy
-      stats-server:
-        condition: service_healthy
-      comment-db:
-        condition: service_healthy
-    environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://comment-db:5432/comment_db
-      - POSTGRES_USER=user
-      - POSTGRES_PASSWORD=password
-      - DB_NAME=comment_db
-      - SPRING_DATASOURCE_USERNAME=user
-      - SPRING_DATASOURCE_PASSWORD=password
-      - DB_HOST=comment-db
-      - DB_PORT=6542
-      - EUREKA_HOSTNAME=discovery-server
-      - CONFIG_HOSTNAME=config-server
-      - CONFIG_PORT=8888
-      - SERVER_PORT=9091
-
-  event-service:
-    restart: on-failure
-    build: core/event-service
-    image: event-service
-    container_name: "event-service"
-    ports:
-      - "9092:9092"
-    depends_on:
-      discovery-server:
-        condition: service_healthy
-      config-server:
-        condition: service_healthy
-      stats-server:
-        condition: service_healthy
-      event-db:
-        condition: service_healthy
-    environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://event-db:5432/event_db
-      - POSTGRES_USER=user
-      - POSTGRES_PASSWORD=password
-      - DB_NAME=event_db
-      - SPRING_DATASOURCE_USERNAME=user
-      - SPRING_DATASOURCE_PASSWORD=password
-      - DB_HOST=event-db
-      - DB_PORT=6543
-      - EUREKA_HOSTNAME=discovery-server
-      - CONFIG_HOSTNAME=config-server
-      - CONFIG_PORT=8888
-      - SERVER_PORT=9092
-
-  request-service:
-    restart: on-failure
-    build: core/request-service
-    image: request-service
-    container_name: "request-service"
-    ports:
-      - "9093:9093"
-    depends_on:
-      discovery-server:
-        condition: service_healthy
-      config-server:
-        condition: service_healthy
-      stats-server:
-        condition: service_healthy
-      request-db:
-        condition: service_healthy
-    environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://request-db:5432/request_db
-      - POSTGRES_USER=user
-      - POSTGRES_PASSWORD=password
-      - DB_NAME=request_db
-      - SPRING_DATASOURCE_USERNAME=user
-      - SPRING_DATASOURCE_PASSWORD=password
-      - DB_HOST=request-db
-      - DB_PORT=6544
-      - EUREKA_HOSTNAME=discovery-server
-      - CONFIG_HOSTNAME=config-server
-      - CONFIG_PORT=8888
-      - SERVER_PORT=9093
-
-  user-service:
-    restart: on-failure
-    build: core/user-service
-    image: user-service
-    container_name: "user-service"
-    ports:
-      - "9094:9094"
-    depends_on:
-      discovery-server:
-        condition: service_healthy
-      config-server:
-        condition: service_healthy
-      stats-server:
-        condition: service_healthy
-      user-db:
-        condition: service_healthy
-    environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://user-db:5432/user_db
-      - POSTGRES_USER=user
-      - POSTGRES_PASSWORD=password
-      - DB_NAME=user_db
-      - SPRING_DATASOURCE_USERNAME=user
-      - SPRING_DATASOURCE_PASSWORD=password
-      - DB_HOST=user-db
-      - DB_PORT=6545
-      - EUREKA_HOSTNAME=discovery-server
-      - CONFIG_HOSTNAME=config-server
-      - CONFIG_PORT=8888
-      - SERVER_PORT=9094
-
-  stats-db:
-    image: postgres:16.1
-    container_name: "stats-db"
-    ports:
-      - "6541:5432"
-    volumes:
-      - /var/lib/postgresql/stats
-    environment:
-      - POSTGRES_DB=stats
-      - POSTGRES_USER=user
-      - POSTGRES_PASSWORD=password
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U user -d stats"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 20s
+      - kafka
+    command: "bash -c \
+                'kafka-topics --create --topic stats.user-actions.v1 \
+                             --partitions 1 --replication-factor 1 --if-not-exists \
+                             --bootstrap-server kafka:29092 && \
+                kafka-topics --create --topic stats.events-similarity.v1 \
+                             --partitions 1 --replication-factor 1 --if-not-exists \
+                             --bootstrap-server kafka:29092'"
+    init: true
 
   comment-db:
     image: postgres:16.1
@@ -290,6 +98,24 @@ services:
       - POSTGRES_PASSWORD=password
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U user -d user_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  analyzer-db:
+    image: postgres:16.1
+    container_name: "analyzer-db"
+    ports:
+      - "6546:5432"
+    volumes:
+      - /var/lib/postgresql/stats
+    environment:
+      - POSTGRES_DB=analyzer_db
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d analyzer_db"]
       interval: 10s
       timeout: 5s
       retries: 5

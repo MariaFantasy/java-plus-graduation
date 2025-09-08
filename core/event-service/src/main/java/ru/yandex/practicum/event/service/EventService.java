@@ -23,9 +23,13 @@ public interface EventService {
 
     EventFullDto findById(Long eventId);
 
+    void likeEvent(Long eventId, Long userId);
+
     EventFullDto updateByPrivate(Long userId, Long eventId, UpdateEventUserRequest eventDto);
 
     EventFullDto updateByAdmin(Long eventId, UpdateEventAdminRequest eventDto);
 
     void updateEventConfirmedRequests(Long eventId, Long confirmedRequests);
+
+    Collection<EventShortDto> getRecommendations(Long userId, Long maxResults);
 }

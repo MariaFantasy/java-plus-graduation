@@ -1,0 +1,48 @@
+server:
+  port: 0
+
+kafka:
+  bootstrap-servers: localhost:9092
+  key_deserializer_class: org.apache.kafka.common.serialization.StringDeserializer
+  action:
+    value_deserializer_class: ru.yandex.practicum.mapper.kafka.UserActionDeserializer
+    consumer_client: AnalyzerUserActionConsumer
+    consumer_group: analyzer-user-action-group
+    topic: stats.user-actions.v1
+  similarity:
+    value_deserializer_class: ru.yandex.practicum.mapper.kafka.EventSimilarityDeserializer
+    consumer_client: AnalyzerEventSimilarityConsumer
+    consumer_group: analyzer-event-similarity-group
+    topic: stats.events-similarity.v1
+
+grpc:
+  server:
+    port: 0
+  client:
+    analyzer:
+      address: 'discovery:///analyzer'
+      enableKeepAlive: true
+      keepAliveWithoutCalls: true
+      negotiationType: plaintext
+
+spring:
+  datasource:
+    driverClassName: org.postgresql.Driver
+    username: login
+    password: password
+    url: jdbc:postgresql://localhost:6542/analyzer_db
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: 'true'
+    show-sql: 'true'
+  sql:
+    init:
+      mode: always
+
+logging:
+  level:
+    org.springframework.boot.context.properties: DEBUG
+    io.grpc.netty.shaded.io.netty: DEBUG

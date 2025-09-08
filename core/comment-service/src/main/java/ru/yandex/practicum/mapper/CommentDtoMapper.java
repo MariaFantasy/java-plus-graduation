@@ -22,9 +22,27 @@ public interface CommentDtoMapper {
     @Mapping(target = "updatedOn", source = "comment.updatedOn")
     CommentDto mapToDto(Comment comment, UserShortDto author);
 
+    @Mapping(target = "id", source = "id")
+    @Mapping(target = "eventId", source = "eventId")
+    @Mapping(target = "author", expression = "java(mapAuthorId(comment.getAuthorId()))")
+    @Mapping(target = "replyOn", source = "replyOn.id")
+    @Mapping(target = "replies", source = "replies")
+    @Mapping(target = "text", source = "text")
+    @Mapping(target = "createdOn", source = "createdOn")
+    @Mapping(target = "updatedOn", source = "updatedOn")
+    CommentDto mapReply(Comment comment);
+
     List<CommentDto> mapReplies(List<Comment> replies);
 
+    default UserShortDto mapAuthorId(Long authorId) {
+        if (authorId == null) return null;
+        UserShortDto dto = new UserShortDto();
+        dto.setId(authorId);
+        return dto;
+    }
+
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "eventId", source = "event")
     @Mapping(target = "authorId", ignore = true)
     @Mapping(target = "replyOn", ignore = true)
     @Mapping(target = "replies", ignore = true)
